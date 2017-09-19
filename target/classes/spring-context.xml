@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:jaxws="http://cxf.apache.org/jaxws" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+		http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
+
+	<context:property-placeholder location="classpath:jdbc.properties" />
+
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="user" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+		<property name="jdbcUrl" value="${jdbc.url}" />
+		<property name="driverClass" value="${jdbc.driverClass}" />
+		<property name="initialPoolSize" value="${initialPoolSize}" />
+		<property name="minPoolSize" value="${minPoolSize}" />
+		<property name="maxPoolSize" value="${maxPoolSize}" />
+	</bean>
+
+	<bean id="sqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" value="classpath:mybatis-config.xml" />
+	</bean>
+
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.protal.sale.mapper" />
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactoryBean" />
+	</bean>
+
+	<!-- 发布服务接口 -->
+	<jaxws:endpoint address="/test" implementorClass="com.protal.sale.service.IndexService">
+		<jaxws:implementor>
+			<bean class="com.protal.sale.service.impl.IndexServiceImpl"></bean>
+		</jaxws:implementor>
+	</jaxws:endpoint>
+
+	<jaxws:endpoint address="/user" implementorClass="com.protal.sale.service.UserVerifyService">
+		<jaxws:implementor>
+			<bean class="com.protal.sale.service.impl.UserVerifyServiceIpml"></bean>
+		</jaxws:implementor>
+	</jaxws:endpoint>
+
+	<jaxws:endpoint address="/address" implementorClass="com.protal.sale.service.AddressService">
+		<jaxws:implementor>
+			<bean class="com.protal.sale.service.impl.AddressServiceIpml"></bean>
+		</jaxws:implementor>
+	</jaxws:endpoint>
+
+</beans>
